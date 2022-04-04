@@ -3,6 +3,7 @@ package telran.java41.accounting.controller;
 import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +24,7 @@ import telran.java41.accounting.service.UserAccountService;
 public class UserAccountController {
 
 	UserAccountService accountService;
+	AuthenticationManager authManager;
 
 	@Autowired
 	public UserAccountController(UserAccountService accountService) {

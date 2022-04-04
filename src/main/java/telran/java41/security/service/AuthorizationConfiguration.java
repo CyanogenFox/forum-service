@@ -1,14 +1,23 @@
 package telran.java41.security.service;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+
+import telran.java41.security.listeners.LoginFailureDuePasswordExpiredEvent;
 
 @EnableWebSecurity
 //@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class AuthorizationConfiguration extends WebSecurityConfigurerAdapter {
+
+	public AuthenticationFailureHandler authenticationFailureHandler() {
+		return new LoginFailureDuePasswordExpiredEvent();
+	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -26,6 +35,13 @@ public class AuthorizationConfiguration extends WebSecurityConfigurerAdapter {
 				.access("@customSecurity.checkPostAuthority(#id, authentication.name)")
 				.antMatchers(HttpMethod.DELETE, "/forum/post/{id}/**")
 				.access("@customSecurity.checkPostAuthority(#id, authentication.name) or hasRole('MODERATOR')")
-				.anyRequest().authenticated();
+				.anyRequest().authenticated().and().formLogin().loginPage("/account/login").failureHandler(authenticationFailureHandler());
 	}
+
+	@Override
+	@Bean
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
+
 }
