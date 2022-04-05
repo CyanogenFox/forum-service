@@ -25,7 +25,6 @@ public class AuthProvider implements AuthenticationProvider {
 		UserAccount userAccount = userAccountRepository.findById(authentication.getName())
 				.orElseThrow(() -> new UsernameNotFoundException(authentication.getName()));
 		if (!PasswordNonExpiredCheck.check(userAccount)) {
-			System.out.println("auth check");
 			throw new BadCredentialsException("password expired exception");
 		}
 		if (!BCrypt.checkpw(authentication.getCredentials().toString(), userAccount.getPassword()))

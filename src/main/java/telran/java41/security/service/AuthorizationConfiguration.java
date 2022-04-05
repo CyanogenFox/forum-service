@@ -6,7 +6,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 import telran.java41.security.handlers.LoginFailureDuePasswordExpiredEvent;
@@ -23,7 +22,7 @@ public class AuthorizationConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.httpBasic();
 		http.csrf().disable();
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+//		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		http.authorizeRequests().antMatchers(HttpMethod.POST, "/account/register/**").permitAll()
 				.antMatchers("/forum/posts/**").permitAll().antMatchers("/account/user/*/role/*/**")
 				.hasRole("ADMINISTRATOR").antMatchers(HttpMethod.PUT, "/account/user/{login}/**")
