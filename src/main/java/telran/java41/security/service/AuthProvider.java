@@ -1,12 +1,12 @@
 package telran.java41.security.service;
 
-import javax.security.auth.login.CredentialExpiredException;
-
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
 import lombok.AllArgsConstructor;
@@ -26,10 +26,13 @@ public class AuthProvider implements AuthenticationProvider {
 				.orElseThrow(() -> new UsernameNotFoundException(authentication.getName()));
 		if (!PasswordNonExpiredCheck.check(userAccount)) {
 			System.out.println("auth check");
-//			throw new CredentialExpiredException(); //FIXME
+			throw new BadCredentialsException("password expired exception");
 		}
-		return new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(),
-				authentication.getAuthorities());
+		if (!BCrypt.checkpw(authentication.getCredentials().toString(), userAccount.getPassword()))
+			throw new RuntimeException("Password is incorrect");
+		Authentication token = new UsernamePasswordAuthenticationToken(authentication.getName(),
+				authentication.getCredentials().toString(), authentication.getAuthorities());
+		return token;
 	}
 
 	@Override

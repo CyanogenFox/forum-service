@@ -9,7 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
-import telran.java41.security.listeners.LoginFailureDuePasswordExpiredEvent;
+import telran.java41.security.handlers.LoginFailureDuePasswordExpiredEvent;
 
 @EnableWebSecurity
 //@EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -35,7 +35,8 @@ public class AuthorizationConfiguration extends WebSecurityConfigurerAdapter {
 				.access("@customSecurity.checkPostAuthority(#id, authentication.name)")
 				.antMatchers(HttpMethod.DELETE, "/forum/post/{id}/**")
 				.access("@customSecurity.checkPostAuthority(#id, authentication.name) or hasRole('MODERATOR')")
-				.anyRequest().authenticated().and().formLogin().loginPage("/account/login").failureHandler(authenticationFailureHandler());
+				.anyRequest().authenticated().and().formLogin()
+				.failureHandler(authenticationFailureHandler()).permitAll();
 	}
 
 	@Override
