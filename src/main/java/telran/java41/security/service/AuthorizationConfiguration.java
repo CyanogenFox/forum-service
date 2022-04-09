@@ -1,11 +1,13 @@
 package telran.java41.security.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 import telran.java41.security.handlers.LoginFailureDuePasswordExpiredEvent;
@@ -14,6 +16,9 @@ import telran.java41.security.handlers.LoginFailureDuePasswordExpiredEvent;
 //@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class AuthorizationConfiguration extends WebSecurityConfigurerAdapter {
 
+	@Autowired
+	LoginFailureDuePasswordExpiredEvent loginFailureDuePasswordExpiredEvent;
+	
 	public AuthenticationFailureHandler authenticationFailureHandler() {
 		return new LoginFailureDuePasswordExpiredEvent();
 	}
@@ -22,7 +27,7 @@ public class AuthorizationConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.httpBasic();
 		http.csrf().disable();
-//		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);// temp
 		http.authorizeRequests().antMatchers(HttpMethod.POST, "/account/register/**").permitAll()
 				.antMatchers("/forum/posts/**").permitAll().antMatchers("/account/user/*/role/*/**")
 				.hasRole("ADMINISTRATOR").antMatchers(HttpMethod.PUT, "/account/user/{login}/**")
@@ -35,7 +40,7 @@ public class AuthorizationConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.DELETE, "/forum/post/{id}/**")
 				.access("@customSecurity.checkPostAuthority(#id, authentication.name) or hasRole('MODERATOR')")
 				.anyRequest().authenticated().and().formLogin()
-				.failureHandler(authenticationFailureHandler()).permitAll();
+				.failureHandler(loginFailureDuePasswordExpiredEvent).permitAll().and().logout().deleteCookies("JSESSIONID");
 	}
 
 	@Override

@@ -17,8 +17,10 @@ public class LoginFailureDuePasswordExpiredEvent implements AuthenticationFailur
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException exception) throws IOException, ServletException {
+		System.out.println("login failure check, " + exception.getClass());
 
 		if (exception.getClass().equals(BadCredentialsException.class)) {
+			System.out.println("redirect check");
 			response.sendRedirect("/account/password");
 		}
 	}

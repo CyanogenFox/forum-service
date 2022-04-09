@@ -1,6 +1,5 @@
 package telran.java41.security.service;
 
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +16,6 @@ import telran.java41.accounting.model.UserAccount;
 public class UserDetailServiceImpl implements UserDetailsService {
 
 	UserAccountRepository repository;
-	AuthenticationManager authManager;
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
